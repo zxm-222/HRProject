@@ -1,9 +1,11 @@
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { getToken, setToken, removeToken, setTimeStamp } from '@/utils/auth'
 import { login } from '@/api/user'
-
+import { getUserInfo } from '@/api/user'
+import { getUserDetailById } from '@/api/user'
 // 状态
 const state = {
-  token: getToken() // 设置token初始状态
+  token: getToken(), // 设置token初始状态
+  userInfo: {} // // 定义一个空的对象 不是null 因为后边开发userInfo的属性给别人用
 }
 // 修改状态
 const mutations = {
@@ -16,6 +18,14 @@ const mutations = {
   removeToken (state) {
     state.token = null // 删除vuex和token
     removeToken() // 先清除 vuex  再清除缓存 vuex和 缓存数据的同步
+  },
+  // 设置用户信息
+  setUserInfo (state, userInfo) {
+    state.userInfo = { ...userInfo } // 使用浅拷贝的方式去赋值对象 （数据更新之后 才会触发组件的更新）
+  },
+  // 删除用户的信息
+  removeUserInfo (state) {
+    state.userInfo = {}
   }
 }
 // 执行异步
@@ -28,6 +38,24 @@ const actions = {
     // 现在有用户token
     // actions 修改state 必须通过mutations
     context.commit('setToken', result)
+    // 写入时间戳
+    // 将当前最新的时间写入缓存
+    setTimeStamp()
+  },
+  // 获取用户资料action
+  async getUserInfo (context) {
+    const result = await getUserInfo() // 获取返回值 result 就是用户的基本资料
+    const baseInfo = await getUserDetailById(result.userId) // 为了获取头像
+    const baseResult = { ...result, ...baseInfo } // 将两个接口结果合并
+    context.commit('setUserInfo', baseResult) // 将整个人的信息设置到用户的vuex数据中
+    return result
+  },
+  // 登出的action
+  logout (context) {
+    // 删除token
+    context.commit('removeToken') // 删除了vuex中的 还删除了缓存中的
+    // 删除用户的资料
+    context.commit('removeUserInfo')
   }
 }
 
