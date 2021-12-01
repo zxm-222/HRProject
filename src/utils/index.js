@@ -24,7 +24,8 @@ export function parseTime (time, cFormat) {
       } else {
         // support safari
         // https://stackoverflow.com/questions/4310953/invalid-date-in-safari
-        time = time.replace(new RegExp(/-/gm), '/')
+        // time = time.replace(new RegExp(/-/gm), '/')
+        time = time.replace(/-/gm, '/')
       }
     }
 
@@ -114,4 +115,22 @@ export function param2Obj (url) {
     }
   })
   return obj
+}
+
+// 将列表型的数据转化成树形数据 => 递归算法 => 自身调用自身 => 一定条件不能一样， 否则就会死循环
+// 遍历树形 有一个重点 要先找一个头儿
+export function tranListToTreeData (list, rootValue) {
+  var arr = []
+  list.forEach(item => {
+    if (item.pid === rootValue) {
+      // 看item 下有没有子节点
+      const children = tranListToTreeData(list, item.id)
+      if (children.length) {
+        // 长度大于0 找到子节点
+        item.children = children
+      }
+      arr.push(item) // 将内容加入到数组中
+    }
+  })
+  return arr
 }

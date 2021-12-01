@@ -8,15 +8,15 @@
         </h3>
       </div>
 
-      <el-form-item prop="username">
+      <el-form-item prop="mobile">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
         <el-input
           ref="username"
-          v-model="loginForm.username"
-          placeholder="Username"
-          name="username"
+          v-model="loginForm.mobile"
+          placeholder="手机号"
+          name="mobile"
           type="text"
           tabindex="1"
           auto-complete="on"
@@ -32,7 +32,7 @@
           ref="password"
           v-model="loginForm.password"
           :type="passwordType"
-          placeholder="Password"
+          placeholder="密码"
           name="password"
           tabindex="2"
           auto-complete="on"
@@ -74,7 +74,7 @@ export default {
         mobile: [{ required: true, trigger: 'blur', message: '手机号码不能为空' }, {
           validator: validateMobile, trigger: 'blur'
         }],
-        password: [{ required: true, trigger: 'blur', message: '手机号码不能为空' }, {
+        password: [{ required: true, trigger: 'blur', message: '密码不能为空' }, {
           min: 6, max: 16, message: '密码的长度在6-16位之间 '
         }]
       },
