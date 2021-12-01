@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-container" v-loading="loading">
+  <div v-loading="loading" class="dashboard-container">
     <div class="app-container">
       <el-card class="tree-card">
         <!--        行列布局-->
