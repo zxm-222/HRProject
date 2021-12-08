@@ -16,7 +16,7 @@
           <template slot-scope="{ row }">
             <el-button v-if="row.type === 1" type="text" @click="addPermission(2,row.id)">添加</el-button>
             <el-button type="text" @click="editPermission(row.id)">编辑</el-button>
-            <el-button type="text" @click="delPermission(id)">删除</el-button>
+            <el-button type="text" @click="delPermission(row.id)">删除</el-button>
           </template>
         </el-table-column>
 

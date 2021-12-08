@@ -8,44 +8,48 @@ import 'nprogress/nprogress.css' // 进度条样式
 //
 // NProgress.configure({ showSpinner: false }) // NProgress Configuration
 //
-const whiteList = ['/login', '/404'] // 定义白名单 所有不受权限控制的页面
-router.beforeEach(async function (to, from, next) {
-// 开启进度条
-  NProgress.start()
-  //
-  //   // set page title
-  //   document.title = getPageTitle(to.meta.title)
-  //
-  //   // determine whether the user has logged in
-  //   const hasToken = getToken()
-  // 判断有无token
+// 前置守卫
+const whileList = ['/login', '/404']
+router.beforeEach(async (to, from, next) => {
+  NProgress.start() // 开启进度条
+  // next是一个必须执行的钩子 不执行就卡主了
   if (store.getters.token) {
-    // 如果有token 判断是不是去登录页
     if (to.path === '/login') {
-      // 去登录页 去主页
-      next('/')
-      //       NProgress.done()
+      // next() 放行
+      // next(false) 终止
+      // next(地址) 跳到某个 地址
+      next('/') // 跳到主页
     } else {
+      // 要判断是不是已经获取过资料了
       if (!store.getters.userId) {
-        // 如果没有id这个值 才会调用 vuex的获取资料的action
-        // 写await 是为了想获取完资料再去放行
-        await store.dispatch('user/getUserInfo')
+        // 如果id不存在 意味着当前没有用户资料 就要去获取用户资料
+        // vuex的action是一个promise
+        const { roles } = await store.dispatch('user/getUserInfo')
+        // 此时已经获取完资料
+        const routes = await store.dispatch('permission/filterRoutes', roles.menus)
+        // 此时得到的routes是当前用户的所拥有的的动态路由的权限
+        router.addRoutes([...routes, { path: '*', redirect: '/404', hidden: true }]) // 将当前动态路由加到当前路由规则上
+        // 加await的意思是 强制等待获取完用户资料之后 才去放行  就能保证 用户进到页面时候 有资料
+        // 添加完路由之后 不能用next()  要用next(to.path) 否则地址不能生效 这算是一个已知 的小缺陷
+        // 执行完addRoutes 必须执行next(to.path) 不能执行 next() 这是一个已知的问题缺陷
+        next(to.path) // 解决直接执行next()时的异常
+      } else {
+        next() // 放行
       }
-      next()
     }
   } else {
-    //     没有token
-    if (whiteList.indexOf(to.path) > -1) {
-      //       如果找到 在名单里
+    if (whileList.indexOf(to.path) > -1) {
+      // 表示在白名单里面
       next()
     } else {
-      next('/login') // 跳到登录页
+      next('/login')
     }
   }
-  NProgress.done() // 手动强制关闭一次  为了解决 手动切换地址时  进度条的不关闭的问题
+  NProgress.done() // 是为了解决手动输入地址时 进度条不关闭的问题
 })
+
 // 后置守卫
 router.afterEach(() => {
-//   // finish progress bar
-  NProgress.done() // 关闭进度条
+  NProgress.done()
 })
+

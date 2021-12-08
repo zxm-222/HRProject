@@ -21,7 +21,7 @@
               <el-table-column align="center" prop="description" label="描述" />
               <el-table-column align="center" label="操作">
                 <template slot-scope="{ row }">
-                  <el-button size="small" type="success">分配权限</el-button>
+                  <el-button size="small" type="success" @click="assignPerm(row.id)">分配权限</el-button>
                   <el-button size="small" type="primary" @click="editRole(row.id)">编辑</el-button>
                   <el-button size="small" type="danger" @click="deleteRole(row.id)">删除</el-button>
                 </template>
@@ -81,12 +81,35 @@
         </el-tabs>
       </el-card>
     </div>
+    <!--    分配权限弹出层-->
+    <el-dialog title="分配权限" :visible="showPermDialog" @close="btnPermCancel">
+      <!--      check-strictly 为true 表示父子勾选时不互相关联 false互相关联-->
+      <!--      id是唯一标识-->
+      <el-tree
+        ref="permTree"
+        :data="permData"
+        :props="defaultProps"
+        :default-expand-all="true"
+        :show-checkbox="true"
+        :check-strictly="true"
+        :default-checked-keys="selectCheck"
+        node-key="id"
+      />
+      <el-row slot="footer" type="flex" justify="center">
+        <el-col :span="6">
+          <el-button type="primary" size="small" @click="btnPermOK">确定</el-button>
+          <el-button size="small" @click="btnPermCancel">取消</el-button>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { addRole, deleteRole, getCompanyInfo, getRoleDetail, getRoleList, updateRole } from '@/api/setting'
+import { addRole, assignPerm, deleteRole, getCompanyInfo, getRoleDetail, getRoleList, updateRole } from '@/api/setting'
 import { mapGetters } from 'vuex'
+import { tranListToTreeData } from '@/utils'
+import { getPermissionList } from '@/api/permission'
 
 export default {
   // 组件名称
@@ -113,7 +136,14 @@ export default {
       roleForm: {},
       rules: {
         name: [{ required: true, message: '角色名称不能为空', trigger: 'blur' }]
-      }
+      },
+      showPermDialog: false,
+      defaultProps: {
+        label: 'name'
+      },
+      permData: [],
+      selectCheck: [],
+      roleId: null
     }
   },
   // 计算属性
@@ -197,6 +227,23 @@ export default {
       // 移除校验
       this.$refs.roleForm.resetFields()
       this.showDialog = false
+    },
+    // 获取权限点数据
+    async assignPerm (id) {
+      this.permData = tranListToTreeData(await getPermissionList(), '0') // 转化list到树形数据
+      this.roleId = id
+      const { permIds } = await getRoleDetail(id) // 当前角色权限点数据
+      this.selectCheck = permIds
+      this.showPermDialog = true
+    },
+    async btnPermOK () {
+      await assignPerm({ permIds: this.$refs.permTree.getCheckedKeys(), id: this.roleId })
+      this.$message.success('分配权限成功')
+      this.showPermDialog = false
+    },
+    btnPermCancel () {
+      this.selectCheck = [] // 重置数据
+      this.showPermDialog = false
     }
   }
 }

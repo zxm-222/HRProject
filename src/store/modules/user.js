@@ -2,6 +2,7 @@ import { getToken, setToken, removeToken, setTimeStamp } from '@/utils/auth'
 import { login } from '@/api/user'
 import { getUserInfo } from '@/api/user'
 import { getUserDetailById } from '@/api/user'
+import { resetRouter } from '@/router'
 // 状态
 const state = {
   token: getToken(), // 设置token初始状态
@@ -56,6 +57,9 @@ const actions = {
     context.commit('removeToken') // 删除了vuex中的 还删除了缓存中的
     // 删除用户的资料
     context.commit('removeUserInfo')
+    // 重置路由
+    resetRouter()
+    context.commit('permission/setRoutes', [], { root: true })
   }
 }
 
