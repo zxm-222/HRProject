@@ -21,6 +21,13 @@
 
 <script>
 export default {
+  name: 'WorkCalendar',
+  filters: {
+    getDay (value) {
+      const day = value.split('-')[2]
+      return day.startsWith('0') ? day.substr(1) : day
+    }
+  },
   props: {
     startDate: {
       type: Date,
@@ -33,6 +40,27 @@ export default {
       currentYear: null, // 当前年份
       currentDate: null,
       yearList: []
+    }
+  },
+  // 初始化事件
+  created () {
+    // 处理起始时间
+    this.currentMonth = this.startDate.getMonth() + 1
+    this.currentYear = this.startDate.getFullYear()
+    this.yearList = Array.from(Array(11), (value, index) => this.currentYear + index - 5)
+    this.dateChange()
+  },
+  methods: {
+    // 是否是休息日
+    isWeek (value) {
+      return value.getDay() === 6 || value.getDay() === 0
+    },
+    // 当年月份改变之后
+    dateChange () {
+      const year = this.currentYear
+      const month = this.currentMonth
+      // 以当前月的1号为起始
+      this.currentDate = new Date(`${year}-${month}-1`)
     }
   }
 }

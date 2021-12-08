@@ -24,7 +24,7 @@ service.interceptors.request.use(config => {
       return Promise.reject(new Error('token超时了'))
     }
     // 如果token存在 注入token
-    config.headers['Authorization'] = `Bearer ${store.getters.token}`
+    config.headers.Authorization = `Bearer ${store.getters.token}`
   }
   return config // 必须返回配置
 }, error => {
@@ -44,8 +44,8 @@ service.interceptors.response.use(response => {
   // error信息里面 response的对象
   if (error.response && error.response.data && error.response.data.code === 10002) {
     // 等于10002 表示token超时
-    store.dispatch('user/login') // 登出action 删除token
-    router.push('login')
+    store.dispatch('user/logout') // 登出action 删除token
+    router.push('/login')
   } else {
     Message.error(error.message) // 提示错误信息
   }

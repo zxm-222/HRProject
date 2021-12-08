@@ -22,6 +22,7 @@ const mutations = {
   },
   // 设置用户信息
   setUserInfo (state, userInfo) {
+    // state.userInfo = userInfo
     state.userInfo = { ...userInfo } // 使用浅拷贝的方式去赋值对象 （数据更新之后 才会触发组件的更新）
   },
   // 删除用户的信息

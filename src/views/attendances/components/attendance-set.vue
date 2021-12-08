@@ -407,7 +407,7 @@ import * as commonApi from '@/utils'
 export default {
   name: 'Add',
   props: [],
-  data() {
+  data () {
     return {
       dialogFormVisible: false,
       isShowSelect: false,
@@ -470,43 +470,43 @@ export default {
     }
   },
   computed: {
-    inpNum() {
+    inpNum () {
       return this.oldNum
     }
   },
   // 创建完毕状态
-  created() {
+  created () {
     this.getDepartments() // 获取部门数据
     this.stateData = attendanceApi
   },
   methods: {
     // 业务方法
     // 获取部门
-    async getDepartments() {
+    async getDepartments () {
       const { depts } = await getDepartments()
       this.departmentData = depts
       this.formBase.departmentId = this.leaveBase.departmentId = this.deductionsBase.departmentId = this.overtimeBase.departmentId = this.departmentData[0].id
       this.handleChange(this.leaveBase.departmentId)
     },
     // 弹层显示
-    dialogFormV() {
+    dialogFormV () {
       this.dialogFormVisible = true
     },
     // 弹层隐藏
-    dialogFormH() {
+    dialogFormH () {
       this.dialogFormVisible = false
     },
-    clearFormDate() {
+    clearFormDate () {
       this.formBase = {}
     },
     // 退出
-    handleClose() {
+    handleClose () {
       this.dialogFormH()
       this.clearFormDate()
     },
     // 界面交互
     // 表单提交
-    createData() {
+    createData () {
       this.formBase.formOfEmployment = this.formOfEmployment
       this.$refs.dataForm.validate(async valid => {
         if (valid) {
@@ -519,11 +519,11 @@ export default {
       })
     },
     // 出勤选择部门
-    async handleChange(val) {
+    async handleChange (val) {
       this.formBase = await getAttendance({ departmentId: val })
     },
     // 请假选择部门
-    async handleChangeLeave(val) {
+    async handleChangeLeave (val) {
       this.leaveBase.departmentId = val
       this.stateData.type.forEach(item => {
         item.isEnable = false
@@ -544,7 +544,7 @@ export default {
       })
     },
     // 扣款选择部门
-    async  handleChangeDeductions(val) {
+    async  handleChangeDeductions (val) {
       this.deductionsBase.departmentId = val
       this.stateData.departmentType.forEach(item => {
         item.departmentId = val
@@ -567,7 +567,7 @@ export default {
       })
     },
     // 加班选择部门
-    async handleChangeovertime(val) {
+    async handleChangeovertime (val) {
       this.overtimeBase.departmentId = val
       this.overtimeBase.rules.forEach(item => {
         item.departmentId = val
@@ -614,7 +614,7 @@ export default {
       }
     },
     // 考勤配置保存更新
-    async  handleAttendance() {
+    async  handleAttendance () {
       this.$refs.dataForm.validate(async valid => {
         if (valid) {
           await attendanceSave(this.formBase)
@@ -624,7 +624,7 @@ export default {
       })
     },
     // 请假配置保存更新
-    handleLeave() {
+    handleLeave () {
       this.$refs.leaveForm.validate(async valid => {
         if (valid) {
           this.tylelist = this.stateData.type
@@ -642,7 +642,7 @@ export default {
       })
     },
     // 扣款配置保存更新
-    handleDeductions() {
+    handleDeductions () {
       this.$refs.deductionsForm.validate(async valid => {
         if (valid) {
           var deductionList = this.stateData.departmentType
@@ -660,7 +660,7 @@ export default {
       })
     },
     // 加班配置保存更新
-    handleOvertime() {
+    handleOvertime () {
       this.$refs.overtimeForm.validate(async valid => {
         if (valid) {
           var deductionList = this.overtimeBase
@@ -696,7 +696,7 @@ export default {
       })
     },
     // 点击设置标签
-    handleClick(tab, event) {
+    handleClick (tab, event) {
       if (tab.index === '0') {
         if (this.formBase.departmentId !== '') {
           this.handleChange(this.formBase.departmentId)
@@ -716,19 +716,19 @@ export default {
         }
       }
     },
-    typeTip(obj) {
+    typeTip (obj) {
       this.$message.error(obj)
     },
     // 验证输入正整数
-    handleInput: function(e) {
+    handleInput: function (e) {
       getInteger(e, this.typeTip)
     },
     // 获取小数点后1位
-    handleInputPoint(e) {
+    handleInputPoint (e) {
       getIntegerPoint(e)
     },
     //
-    handleStatus(e, obj) {
+    handleStatus (e, obj) {
       obj.departmentId = this.deductionsBase.departmentId
       if (this.deductionsBase.departmentId === '') {
         this.$message.error('请选择部门')
