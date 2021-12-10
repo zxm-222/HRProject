@@ -61,6 +61,8 @@ const actions = {
     // 重置路由
     resetRouter()
     context.commit('permission/setRoutes', [], { root: true })
+    // 重置多页签
+    context.dispatch('tagsView/delAllViews', null, { root: true })
   }
 }
 

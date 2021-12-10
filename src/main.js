@@ -18,6 +18,7 @@ import * as directives from '@/directives'
 import * as filters from '@/filters' // 工具类
 import Component from '@/components'
 import checkPermission from '@/mixin/checkPermission'
+import i18n from '@/lang'
 
 Object.keys(directives).forEach(key => {
   // 注册自定义指令
@@ -48,11 +49,17 @@ Vue.use(ElementUI, { locale })
 Vue.use(Component) // 自己的插件
 Vue.mixin(checkPermission)
 
+// 设置element为当前语言
+Vue.use(ElementUI, {
+  i18n: (key, value) => i18n.t(key, value)
+})
+
 Vue.config.productionTip = false
 
 new Vue({
   el: '#app',
   router,
   store,
+  i18n,
   render: h => h(App)
 })

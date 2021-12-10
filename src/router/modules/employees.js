@@ -9,6 +9,7 @@ export default {
   children: [{
     path: '', // 什么都不写 默认路由
     component: () => import('@/views/employees'),
+    name: 'employees',
     meta: {
       title: '员工管理', // meta属性的里面的属性 随意定义 事用title 因为左侧导航会读取我们的路由里的meta里面的title作为显示菜单名称
       icon: 'people'
